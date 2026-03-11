@@ -2,7 +2,7 @@
 
 A Chrome extension for **DeFi Kingdoms** that reads your hero's Meditation Results and instantly tells you whether your HP and MP level-up rolls were Small, Regular, or Large — with probability bars per class.
 
-![Extension popup showing HP/MP roll result](https://raw.githubusercontent.com/kjetil007/dfk-roll-checker/main/screenshot.png)
+![Extension popup showing HP/MP roll result](https://raw.githubusercontent.com/KjetilSv/dfk-roll-checker/master/screenshot.png)
 
 ## Features
 
@@ -16,9 +16,9 @@ A Chrome extension for **DeFi Kingdoms** that reads your hero's Meditation Resul
 
 Chrome Web Store approval takes time and costs $5. Install directly instead:
 
-1. [Download the ZIP](https://github.com/kjetil007/dfk-roll-checker/archive/refs/heads/main.zip) and unzip **or** clone the repo:
+1. [Download the ZIP](https://github.com/KjetilSv/dfk-roll-checker/archive/refs/heads/master.zip) and unzip **or** clone the repo:
    ```
-   git clone https://github.com/kjetil007/dfk-roll-checker.git
+   git clone https://github.com/KjetilSv/dfk-roll-checker.git
    ```
 2. Open Chrome and go to `chrome://extensions`
 3. Enable **Developer mode** (toggle, top right)
