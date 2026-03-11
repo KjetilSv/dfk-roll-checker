@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Kjetil'S Awesome Roll Checker (DFK)",
+  "version": "1.2",
+  "description": "Reads the Meditation Results screen in DeFi Kingdoms and instantly shows whether your HP and MP level-up rolls were Small, Regular, or Large — with roll-chance bars per class.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["*://game.defikingdoms.com/*"],
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Kjetil'S Awesome Roll Checker",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://game.defikingdoms.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

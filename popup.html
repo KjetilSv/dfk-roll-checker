@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kjetil'S Awesome Roll Checker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; width: 340px; padding: 16px; }
+  h1 { font-size: 1rem; color: #e94560; margin-bottom: 12px; }
+  button.read-btn {
+    width: 100%; padding: 10px; background: #e94560; border: none; border-radius: 8px;
+    color: white; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 12px;
+  }
+  button.read-btn:hover { background: #c73652; }
+  .status { font-size: 0.8rem; color: #888; margin-bottom: 10px; min-height: 18px; }
+  .status.ok  { color: #27ae60; }
+  .status.err { color: #e94560; }
+  /* (inputs removed in simple mode) */
+  .result { margin-top: 12px; display: none; }
+  .result-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+  .chip {
+    border-radius: 8px; padding: 10px; text-align: left; background: #0f3460;
+    border: 1px solid #1a4a8a; font-size: 0.82rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .chip .label    { color: #888; font-size: 0.68rem; text-transform: uppercase; margin-bottom: 2px; }
+  .chip .left { display: flex; flex-direction: column; }
+  .chip .right { display: flex; flex-direction: column; align-items: flex-end; }
+  .chip-vals      { font-size: 0.68rem; color: #aaa; margin-top: 4px; letter-spacing: 0.02em; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 800; }
+  /* Requested colors */
+  .badge-small   { background: #6b7280; }   /* gray */
+  .badge-regular { background: #60a5fa; }   /* light blue */
+  .badge-large   { background: #a78bfa; }   /* purple */
+  .badge-unknown { background: #666; }
+  .summary { border-radius: 10px; padding: 10px; text-align: center; margin-bottom: 8px; border: 2px solid; }
+  .summary.legendary { background: rgba(255,215,0,0.08); border-color: #ffd700; }
+  .summary.great  { background: rgba(231,100,56,0.10); border-color: #e67e22; }
+  .summary.good   { background: rgba(39,174,96,0.10);  border-color: #27ae60; }
+  .summary.average{ background: rgba(74,144,217,0.10); border-color: #4a90d9; }
+  .summary.bad    { background: rgba(233,69,96,0.08);  border-color: #e94560; }
+  /* Single segmented chance bar (one per HP/MP) */
+  .seg-wrap { margin-top: 6px; }
+  .seg-title { font-size: 0.72rem; color: #cbd5e1; margin: 6px 0 4px; }
+  .seg-outer { height: 18px; background: #0a1a30; border: 1px solid #1a4a8a; border-radius: 6px; overflow: hidden; display: flex; }
+  .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 800; color: #0b1220; }
+  .seg-small   { background: #6b7280; }  /* gray */
+  .seg-regular { background: #60a5fa; }  /* light blue */
+  .seg-large   { background: #a78bfa; }  /* purple */
+  .seg-match { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.9); }
+
+  /* debug/formula UI removed in simple mode */
+</style>
+</head>
+<body>
+<h1>Kjetil'S Awesome Roll Checker</h1>
+
+<button class="read-btn" id="read-btn">Read from Meditation Results</button>
+<div class="status" id="status">Click to read the current Meditation Results screen.</div>
+
+<!-- Simple mode: no manual inputs; reads everything from the Meditation Results page -->
+
+<div class="result" id="result">
+  <div class="summary" id="summary">
+    <div style="font-size:1.4rem" id="sum-emoji">🎲</div>
+    <div style="font-weight:700;margin:2px 0" id="sum-title">—</div>
+    <div style="font-size:0.78rem;color:#aaa" id="sum-desc">—</div>
+  </div>
+  <div class="result-row">
+    <div class="chip">
+      <div class="left">
+        <div class="label">HP</div>
+        <div class="chip-vals" id="hp-vals"></div>
+      </div>
+      <div class="right">
+        <span id="hp-badge" class="badge">—</span>
+      </div>
+    </div>
+
+    <div class="chip">
+      <div class="left">
+        <div class="label">MP</div>
+        <div class="chip-vals" id="mp-vals"></div>
+      </div>
+      <div class="right">
+        <span id="mp-badge" class="badge">—</span>
+      </div>
+    </div>
+  </div>
+  <div id="hp-bars"></div>
+  <div id="mp-bars"></div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
