@@ -49,6 +49,20 @@
   .seg-large   { background: #a78bfa; }  /* purple */
   .seg-match { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.9); }
 
+  /* Stat growth table */
+  .stbl { width:100%; border-collapse: collapse; font-size: 0.72rem; margin-top: 4px; }
+  .stbl th { color:#555; font-weight:600; text-align:center; padding:2px 4px; border-bottom:1px solid #1a4a8a; }
+  .stbl td { padding:3px 4px; text-align:center; }
+  .stbl .sname { text-align:left; font-weight:700; color:#cbd5e1; }
+  .stbl .sval  { color:#94a3b8; }
+  .stbl .spct  { font-weight:700; }
+  .stbl .spct2 { color:#475569; }
+  .stbl .sgot  { font-weight:800; }
+  .stbl .sbits { font-size:0.6rem; color:#475569; letter-spacing:1px; }
+  .stat-hit td { background: rgba(167,139,250,0.07); }
+  .stat-hit .sgot { color:#a78bfa; }
+  .stat-miss .sgot { color:#374151; }
+  .stbl-legend { font-size:0.6rem; color:#374151; margin-top:4px; text-align:center; }
   /* debug/formula UI removed in simple mode */
 </style>
 </head>
@@ -91,6 +105,7 @@
   </div>
   <div id="hp-bars"></div>
   <div id="mp-bars"></div>
+  <div id="stats-table" style="display:none"></div>
 </div>
 
 <script src="popup.js"></script>

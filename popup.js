@@ -1,27 +1,31 @@
+// [S%, R%, L%] for HP and MP; stat growth P% (primary) per class
 const classData = {
-  "Warrior":     { hp: [15,40,45], mp: [50,35,15] },
-  "Knight":      { hp: [15,35,50], mp: [40,40,20] },
-  "Thief":       { hp: [25,50,25], mp: [30,40,30] },
-  "Archer":      { hp: [25,50,25], mp: [30,40,30] },
-  "Priest":      { hp: [35,40,25], mp: [15,35,50] },
-  "Wizard":      { hp: [35,40,25], mp: [15,35,50] },
-  "Monk":        { hp: [25,35,40], mp: [30,40,30] },
-  "Pirate":      { hp: [15,45,40], mp: [45,40,15] },
-  "Berserker":   { hp: [15,45,40], mp: [45,40,15] },
-  "Seer":        { hp: [35,40,25], mp: [15,35,50] },
-  "Legionnaire": { hp: [15,35,50], mp: [50,35,15] },
-  "Scholar":     { hp: [35,40,25], mp: [15,35,50] },
-  "Paladin":     { hp: [10,40,50], mp: [25,40,35] },
-  "Dark Knight": { hp: [20,55,25], mp: [20,40,40] },
-  "Summoner":    { hp: [40,40,20], mp: [15,35,50] },
-  "Ninja":       { hp: [25,50,25], mp: [25,50,25] },
-  "Shapeshifter":{ hp: [25,35,40], mp: [30,40,30] },
-  "Bard":        { hp: [35,40,25], mp: [20,40,40] },
-  "Dragoon":     { hp: [15,35,50], mp: [35,45,20] },
-  "Sage":        { hp: [40,35,25], mp: [10,30,60] },
-  "SpellBow":    { hp: [35,35,30], mp: [15,40,45] },
-  "Dread Knight":{ hp: [10,40,50], mp: [25,50,25] },
+  //                   hp           mp          STR  DEX  AGI  VIT  END  INT  WIS  LCK
+  "Warrior":     { hp:[15,40,45], mp:[50,35,15], g:[75,  70,  50,  65,  65,  20,  20,  35] },
+  "Knight":      { hp:[15,35,50], mp:[40,40,20], g:[70,  55,  45,  75,  75,  20,  25,  35] },
+  "Thief":       { hp:[25,50,25], mp:[30,40,30], g:[55,  55,  70,  50,  45,  25,  35,  65] },
+  "Archer":      { hp:[25,50,25], mp:[30,40,30], g:[55,  80,  50,  50,  60,  40,  25,  40] },
+  "Priest":      { hp:[35,40,25], mp:[15,35,50], g:[30,  30,  40,  50,  60,  70,  80,  40] },
+  "Wizard":      { hp:[35,40,25], mp:[15,35,50], g:[30,  30,  40,  50,  50,  80,  80,  40] },
+  "Monk":        { hp:[25,35,40], mp:[30,40,30], g:[60,  60,  60,  60,  55,  25,  50,  30] },
+  "Pirate":      { hp:[15,45,40], mp:[45,40,15], g:[70,  70,  50,  60,  55,  20,  20,  55] },
+  "Berserker":   { hp:[15,45,40], mp:[45,40,15], g:[80,  60,  55,  65,  60,  20,  20,  40] },
+  "Seer":        { hp:[35,40,25], mp:[15,35,50], g:[30,  30,  55,  50,  50,  70,  80,  35] },
+  "Legionnaire": { hp:[15,35,50], mp:[50,35,15], g:[75,  65,  35,  75,  80,  20,  25,  25] },
+  "Scholar":     { hp:[35,40,25], mp:[15,35,50], g:[30,  30,  30,  55,  55,  80,  70,  50] },
+  "Paladin":     { hp:[10,40,50], mp:[25,40,35], g:[80,  40,  35,  80,  80,  30,  65,  40] },
+  "Dark Knight": { hp:[20,55,25], mp:[20,40,40], g:[85,  55,  35,  75,  60,  70,  35,  35] },
+  "Summoner":    { hp:[40,40,20], mp:[15,35,50], g:[45,  45,  50,  50,  50,  85,  85,  40] },
+  "Ninja":       { hp:[25,50,25], mp:[25,50,25], g:[50,  75,  85,  50,  40,  50,  40,  60] },
+  "Shapeshifter":{ hp:[25,35,40], mp:[30,40,30], g:[65,  70,  80,  65,  55,  25,  45,  45] },
+  "Bard":        { hp:[35,40,25], mp:[20,40,40], g:[50,  70,  65,  50,  40,  50,  60,  65] },
+  "Dragoon":     { hp:[15,35,50], mp:[35,45,20], g:[80,  65,  65,  60,  70,  50,  60,  50] },
+  "Sage":        { hp:[40,35,25], mp:[10,30,60], g:[40,  40,  75,  60,  50,  90,  90,  55] },
+  "SpellBow":    { hp:[35,35,30], mp:[15,30,55], g:[40,  90,  60,  60,  45,  85,  60,  60] },
+  "Dread Knight":{ hp:[10,40,50], mp:[25,50,25], g:[85,  75,  60,  65,  75,  65,  65,  60] },
 };
+// Stat order index: 0=STR,1=DEX,2=AGI,3=VIT,4=END,5=INT,6=WIS,7=LCK
+const STAT_NAMES = ['STR','DEX','AGI','VIT','END','INT','WIS','LCK'];
 
 function hpFormula(vit) {
   return {
@@ -111,6 +115,45 @@ function resolveClass(raw) {
   return null;
 }
 
+function renderStatsTable(cls, rawStats, gains) {
+  const data = classData[cls] || classData['Warrior'];
+  const g = data.g || [];
+  let rows = '';
+  STAT_NAMES.forEach((name, i) => {
+    const pct   = g[i] || 0;
+    const sPct  = (pct / 4).toFixed(1);
+    const val   = rawStats[name] ?? '?';
+    const gain  = gains[name];
+    const total = gain ? gain.gain : 0;
+    const gotPrm = gain && gain.parts.some(p => p.includes('[1]'));
+    const gotScd = gain && gain.parts.some(p => p.includes('[2]'));
+    const gotBon = gain && gain.parts.some(p => p.includes('[3]') || p.includes('[4]'));
+    const lucky  = total > 0;
+    const pctColor = pct >= 70 ? '#a78bfa' : pct >= 50 ? '#60a5fa' : '#6b7280';
+    rows += `<tr class="${lucky ? 'stat-hit' : 'stat-miss'}">
+      <td class="sname">${name}</td>
+      <td class="sval">${val}</td>
+      <td class="spct" style="color:${pctColor}">${pct}%</td>
+      <td class="spct2">${sPct}%</td>
+      <td class="sgot">${total > 0 ? `+${total}` : '—'}</td>
+      <td class="sbits">${gotPrm ? '✓' : '·'}${gotScd ? '✓' : '·'}${gotBon ? 'B' : '·'}</td>
+    </tr>`;
+  });
+
+  const el = document.getElementById('stats-table');
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div class="seg-title" style="margin-top:10px">Stat Growth — ${cls}</div>
+    <table class="stbl">
+      <thead><tr>
+        <th>Stat</th><th>Val</th><th>P%</th><th>S%</th><th>Got</th><th>P/S/B</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="stbl-legend">P%=Primary chance · S%=Secondary chance · P/S/B = rolled prm/scd/bonus</div>
+  `;
+}
+
 function calculateFromRead(read) {
   const cls = read.cls;
   const vit = read.vit || 0;
@@ -137,19 +180,19 @@ function calculateFromRead(read) {
   setBadge('hp-badge', hpMatch);
   setBadge('mp-badge', mpMatch);
   setSummary(hpMatch, mpMatch);
+  renderStatsTable(read.cls, read.rawStats, read.gains);
   document.getElementById('result').style.display = 'block';
 }
 
 function normalizeRead(response) {
   return {
-    cls: resolveClass(response.cls) || 'Warrior',
-    hpOld: typeof response.hpOld === 'number' ? response.hpOld : Number(response.hpOld),
-    hpNew: typeof response.hpNew === 'number' ? response.hpNew : Number(response.hpNew),
-    mpOld: typeof response.mpOld === 'number' ? response.mpOld : Number(response.mpOld),
-    mpNew: typeof response.mpNew === 'number' ? response.mpNew : Number(response.mpNew),
-    vit:  typeof response.vit  === 'number' ? response.vit  : Number(response.vit),
-    int:  typeof response.int  === 'number' ? response.int  : Number(response.int),
-    wis:  typeof response.wis  === 'number' ? response.wis  : Number(response.wis),
+    cls:   resolveClass(response.cls) || 'Warrior',
+    hpOld: Number(response.hpOld), hpNew: Number(response.hpNew),
+    mpOld: Number(response.mpOld), mpNew: Number(response.mpNew),
+    vit:   Number(response.vit),   int:   Number(response.int),
+    wis:   Number(response.wis),
+    gains: response._gains || {},
+    rawStats: (() => { try { return JSON.parse(response._raw || '{}'); } catch { return {}; } })(),
   };
 }
 
