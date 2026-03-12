@@ -194,7 +194,8 @@ document.getElementById('read-btn').addEventListener('click', async () => {
           const cols = headerCount >= 5 ? 5 : 4;
           // Header names by index (0=stat, 1=Prm, 2=Scd, 3=Bonus, 4=Rarity)
           // Only sum Prm/Scd/Bonus (columns 1,2,3) for the HP/MP formula.
-          const gainCols = [1, 2, 3]; // exclude Rarity col if present
+          // Include ALL gain columns (Prm, Scd, Bonus, Rarity) — all count in the formula
+          const gainCols = Array.from({length: cols - 1}, (_, k) => k + 1);
 
           const result = {};
           const gains  = {};
