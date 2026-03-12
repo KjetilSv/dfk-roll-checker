@@ -184,33 +184,44 @@ document.getElementById('read-btn').addEventListener('click', async () => {
 
         function getUpdatedStats() {
           const grid = document.querySelector('[class*="_statsGrid_"]');
-          if (!grid) return {};
+          if (!grid) return { stats: {}, gains: {}, debug: 'no _statsGrid_ found' };
           const children = [...grid.children];
+
+          // Count header cells to detect grid width (4 or 5 columns)
+          const headerCount = children.filter(c =>
+            c.className && c.className.includes('_statsHeader_')
+          ).length;
+          const cols = headerCount >= 5 ? 5 : 4;
+          // Header names by index (0=stat, 1=Prm, 2=Scd, 3=Bonus, 4=Rarity)
+          // Only sum Prm/Scd/Bonus (columns 1,2,3) for the HP/MP formula.
+          const gainCols = [1, 2, 3]; // exclude Rarity col if present
+
           const result = {};
           const gains  = {};
           const order = ['STR','DEX','AGI','VIT','END','INT','WIS','LCK'];
-          let i = 4;
+          let i = cols; // skip header row
+
           for (const name of order) {
             if (i >= children.length) break;
             const valEl = children[i]?.querySelector('[class*="_currentStat_"]');
             const current = valEl ? (+valEl.textContent.trim() || 0) : 0;
             let gain = 0;
             const gainParts = [];
-            for (let j = 1; j <= 3; j++) {
-              const txt = (children[i+j]?.textContent?.trim()) || '';
+            for (const j of gainCols) {
+              const txt = (children[i + j]?.textContent?.trim()) || '';
               const n = parseInt(txt);
-              if (!isNaN(n) && n !== 0) { gain += n; gainParts.push(txt); }
+              if (!isNaN(n) && n !== 0) { gain += n; gainParts.push(`${name}[${j}]:${txt}`); }
             }
             result[name] = current + gain;
             gains[name]  = { current, gain, parts: gainParts };
-            i += 4;
+            i += cols;
           }
-          return { stats: result, gains };
+          return { stats: result, gains, debug: `cols=${cols}, headers=${headerCount}` };
         }
 
         const [hpOld, hpNew] = getHpMp('HP');
         const [mpOld, mpNew] = getHpMp('MP');
-        const { stats, gains } = getUpdatedStats();
+        const { stats, gains, debug: statsDebug } = getUpdatedStats();
 
         let cls = null;
         const classEl = document.querySelector('[class*="_class_zqy17_"]');
@@ -224,7 +235,8 @@ document.getElementById('read-btn').addEventListener('click', async () => {
           vit: stats.VIT ?? null, int: stats.INT ?? null, wis: stats.WIS ?? null,
           cls,
           _raw: JSON.stringify(stats),
-          _gains: gains };
+          _gains: gains,
+          _debug: statsDebug };
       }
     });
 
@@ -234,6 +246,25 @@ document.getElementById('read-btn').addEventListener('click', async () => {
       .filter(k => response[k] !== null && response[k] !== undefined).join(', ');
     status.className = 'status ok';
     status.textContent = '✅ Updated from Meditation Results';
+
+    // Store debug info
+    const debugLines = [
+      `grid: ${response._debug || 'n/a'}`,
+      `cls: ${response.cls} → ${read.cls}`,
+      `VIT:${response.vit}  INT:${response.int}  WIS:${response.wis}`,
+      `HP: ${response.hpOld}→${response.hpNew} (+${response.hpNew-response.hpOld})`,
+      `MP: ${response.mpOld}→${response.mpNew} (+${response.mpNew-response.mpOld})`,
+      `stats: ${response._raw}`,
+    ];
+    const debugBox = document.getElementById('debug-box');
+    const debugBtn = document.getElementById('debug-btn');
+    debugBox.textContent = debugLines.join('\n');
+    debugBtn.style.display = 'block';
+    debugBtn.onclick = () => {
+      const visible = debugBox.style.display !== 'none';
+      debugBox.style.display = visible ? 'none' : 'block';
+      debugBtn.textContent = visible ? '🔍 Show debug info' : '🔍 Hide debug info';
+    };
 
     // Auto-calculate immediately after reading
     calculateFromRead(read);
